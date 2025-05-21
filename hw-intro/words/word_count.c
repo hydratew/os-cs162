@@ -37,16 +37,18 @@ int init_words(WordCount **wclist) {
      Returns 0 if no errors are encountered
      in the body of this function; 1 otherwise.
   */
-  wclist = malloc(sizeof(WordCount *));
-  if(wclist == NULL){
-    printf("Initialize Failed.");
-    return 1;
-  }
   *wclist = malloc(sizeof(WordCount));
   if(*wclist == NULL){
     printf("Initialize Failed.");
     return 1;
   }
+  /*
+  wclist = malloc(sizeof(WordCount *));
+  if(wclist == NULL){
+    printf("Initialize Failed.");
+    return 1;
+  }
+    */
   (*wclist)->count = 0;
   return 0;
 }
@@ -70,8 +72,8 @@ WordCount *find_word(WordCount *wchead, char *word) {
   WordCount *wc = NULL;
   wc = wchead;
   if (wchead == NULL || word == NULL) return NULL;
-  while (wc != NULL){
-    if(wc->word == word){
+  while (wc != NULL && wc->count != 0){
+    if(strcmp((wc->word),word) == 0){
       return wc;
     }
     wc = wc->next;
@@ -95,11 +97,15 @@ int add_word(WordCount **wclist, char *word) {
       printf("Add Word Failed.");
       return 1;
     }
+    char * wword = new_string(word);
     newword->count = 1;
-    newword->word = word;
+    newword->word = wword;
     newword->next = NULL;
-    if( (*wclist) == NULL ){
-      *wclist = newword;
+    if( (*wclist)->count == 0 ){
+      free(newword);
+      (*wclist)->word = wword;
+      (*wclist)->count = 1;
+      (*wclist)->next = NULL;
     }
     else if((*wclist)->next == NULL){
       (*wclist)->next = newword;
@@ -118,7 +124,7 @@ int add_word(WordCount **wclist, char *word) {
 void fprint_words(WordCount *wchead, FILE *ofile) {
   /* print word counts to a file */
   WordCount *wc;
-  for (wc = wchead; wc; wc = wc->next) {
+  for (wc = wchead; wc->count != 0; wc = wc->next) {
     fprintf(ofile, "%i\t%s\n", wc->count, wc->word);
   }
 }

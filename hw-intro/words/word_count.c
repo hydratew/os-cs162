@@ -37,7 +37,17 @@ int init_words(WordCount **wclist) {
      Returns 0 if no errors are encountered
      in the body of this function; 1 otherwise.
   */
-  *wclist = NULL;
+  wclist = malloc(sizeof(WordCount *));
+  if(wclist == NULL){
+    printf("Initialize Failed.");
+    return 1;
+  }
+  *wclist = malloc(sizeof(WordCount));
+  if(*wclist == NULL){
+    printf("Initialize Failed.");
+    return 1;
+  }
+  (*wclist)->count = 0;
   return 0;
 }
 
@@ -47,13 +57,26 @@ ssize_t len_words(WordCount *wchead) {
      this function.
   */
     size_t len = 0;
+    if (wchead == NULL) return -1;
+    while (wchead != NULL){
+      len++;
+      wchead = wchead->next;
+    }
     return len;
 }
 
 WordCount *find_word(WordCount *wchead, char *word) {
   /* Return count for word, if it exists */
   WordCount *wc = NULL;
-  return wc;
+  wc = wchead;
+  if (wchead == NULL || word == NULL) return NULL;
+  while (wc != NULL){
+    if(wc->word == word){
+      return wc;
+    }
+    wc = wc->next;
+  }
+  return NULL;
 }
 
 int add_word(WordCount **wclist, char *word) {
@@ -61,6 +84,34 @@ int add_word(WordCount **wclist, char *word) {
      Otherwise insert with count 1.
      Returns 0 if no errors are encountered in the body of this function; 1 otherwise.
   */
+  if (wclist == NULL || word == NULL) return 1;
+  WordCount *find = find_word(*wclist,word);
+  if (find != NULL){
+    find->count++;
+  }
+  else {
+    WordCount *newword = malloc(sizeof(WordCount));
+    if(newword == NULL){
+      printf("Add Word Failed.");
+      return 1;
+    }
+    newword->count = 1;
+    newword->word = word;
+    newword->next = NULL;
+    if( (*wclist) == NULL ){
+      *wclist = newword;
+    }
+    else if((*wclist)->next == NULL){
+      (*wclist)->next = newword;
+    }
+    else {
+      WordCount *list = *wclist;
+      while(list->next != NULL){
+        list = list->next;
+      }
+      list->next = newword;
+    }
+  }
  return 0;
 }
 

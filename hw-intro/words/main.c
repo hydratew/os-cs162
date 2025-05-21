@@ -81,7 +81,43 @@ int num_words(FILE* infile) {
  * 1 in the event of any errors (e.g. wclist or infile is NULL)
  * and 0 otherwise.
  */
+void clean_buffer63(char* buffer){
+  for(int i = 0; i < 63; i++){
+    buffer[i] = 0;
+  }
+  return;
+}
 int count_words(WordCount **wclist, FILE *infile) {
+  int is_word = -1;
+  int ch;
+  char buf[63];
+  clean_buffer63(buf);
+  int curr = 0;
+  if (wclist == NULL || infile == NULL) return 1;
+  while (1){
+    ch = fgetc(infile);
+    if (isalpha(ch) != 0){
+      is_word++;
+      buf[curr] = tolower(ch);
+      curr++;
+    }
+    else if (ch == 10 || ch == 32){
+      if (is_word > 0){
+        add_word(wclist , buf);
+      }
+      clean_buffer63(buf);
+      curr = 0;
+      is_word = -1;
+    }
+    else if (ch == EOF){
+      if (is_word > 0){
+        add_word(wclist , buf);
+      }
+      clean_buffer63(buf);
+      curr = 0;
+      break;
+    }
+  }
   return 0;
 }
 
@@ -90,6 +126,7 @@ int count_words(WordCount **wclist, FILE *infile) {
  * Useful function: strcmp().
  */
 static bool wordcount_less(const WordCount *wc1, const WordCount *wc2) {
+  if (strcmp(wc1->word,wc2->word) < 0) return 1;
   return 0;
 }
 
@@ -108,11 +145,11 @@ static int display_help(void) {
 int main (int argc, char *argv[]) {
 
   // Count Mode (default): outputs the total amount of words counted
-  bool count_mode = true;
+  bool count_mode = false;
   int total_words = 0;
 
   // Freq Mode: outputs the frequency of each word
-  bool freq_mode = false;
+  bool freq_mode = true;
 
   FILE *infile = NULL;
 
@@ -152,18 +189,35 @@ int main (int argc, char *argv[]) {
 
   if ((argc - optind) < 1) {
     // No input file specified, instead, read from STDIN instead.
-    infile = stdin;
-    total_words = num_words(infile);
+    if(count_mode){
+      infile = stdin;
+      total_words = num_words(infile);
+    }
+    if(freq_mode){
+      infile = stdin;
+      count_words(&word_counts ,infile);
+    }
 
   } else {
     // At least one file specified. Useful functions: fopen(), fclose().
     // The first file can be found at argv[optind]. The last file can be
     // found at argv[argc-1].
-    while (optind < argc){
-      infile = fopen(argv[optind],"r");
-      total_words += num_words(infile);
-      fclose(infile);
-      optind++;
+    if(count_mode){
+      while (optind < argc){
+        infile = fopen(argv[optind],"r");
+        total_words += num_words(infile);
+        fclose(infile);
+        optind++;
+      }
+    }
+    
+    if(freq_mode){
+      while (optind < argc){
+        infile = fopen(argv[optind],"r");
+        count_words(&word_counts ,infile);
+        fclose(infile);
+        optind++;
+      }
     }
   }
 

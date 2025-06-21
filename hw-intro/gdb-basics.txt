@@ -1,0 +1,9 @@
+4. argv:0x3ffffe24, argument of map.
+6. 0x56556273
+11. info registers
+18. 0x40001261
+21. asm below:
+mov $0x0,%eax
+mov -0x4(%ebo),%ebx
+leave
+ret

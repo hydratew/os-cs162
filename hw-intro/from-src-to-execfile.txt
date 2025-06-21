@@ -1,0 +1,14 @@
+1. 	movl	8(%ebp), %eax
+	subl	$1, %eax
+	subl	$12, %esp
+	pushl	%eax
+	call	recur
+2.    .text: executive code of program
+      .data: initiated or static integers
+3.    objdump -t program
+4.    g:global o:object f:function und:undefined type
+5.    The symbol table includes map.c, recurse.c and their included libs' objects, functions, and so on.
+6.    .text
+7.    .bss(dynamic), .data(static)
+8.    No, because stack and heap created when program is running.
+9.    Stack grow up, Address decrease.

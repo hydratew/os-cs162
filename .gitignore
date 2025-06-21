@@ -1,0 +1,5 @@
+limits
+map
+words/words
+*.o
+*.S

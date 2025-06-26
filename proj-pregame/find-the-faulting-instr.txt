@@ -1,0 +1,15 @@
+1. 0xc0000008, Rights violation error when reading page. In default session, virtual address range is from 0 to 0xc0000000, which defined in threads/vaddr.h.
+2. 0x8048915
+3. 0804890f <_start>:
+ 804890f:	55                   	push   %ebp
+ 8048910:	89 e5                	mov    %esp,%ebp
+ 8048912:	83 ec 18             	sub    $0x18,%esp
+ 8048915:	8b 45 0c             	mov    0xc(%ebp),%eax
+ 8048918:	89 44 24 04          	mov    %eax,0x4(%esp)
+ 804891c:	8b 45 08             	mov    0x8(%ebp),%eax
+ 804891f:	89 04 24             	mov    %eax,(%esp)
+ 8048922:	e8 6d f7 ff ff       	call   8048094 <main>
+ 8048927:	89 04 24             	mov    %eax,(%esp)
+ 804892a:	e8 d4 22 00 00       	call   804ac03 <exit>
+4. void _start(int argc, char* argv[]) { exit(main(argc, argv)); }
+5. Instructions meaning omitted. Because push %ebp leads to ebp-=4, but 0xc(%ebp) makes ebp+=12, So we get address overflow.

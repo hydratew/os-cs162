@@ -472,8 +472,10 @@ static bool setup_stack(void** esp) {
   kpage = palloc_get_page(PAL_USER | PAL_ZERO);
   if (kpage != NULL) {
     success = install_page(((uint8_t*)PHYS_BASE) - PGSIZE, kpage, true);
-    if (success)
-      *esp = PHYS_BASE;
+    if (success){
+      *esp = PHYS_BASE - 20;// -20 to avoid address overflow, and make stack aligned.
+      memset((void*)(*esp + 4), 1, 1);//set argc to 1
+    }
     else
       palloc_free_page(kpage);
   }

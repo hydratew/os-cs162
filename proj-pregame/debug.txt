@@ -1,0 +1,2 @@
+5.    0xbfffff98:     0x00000001      0x000000a2
+6.    args[0] = 0, args[1] = 162. same as user stack.
